@@ -21,9 +21,13 @@
 # and last chars of the string are the same.
 # Note: python does not have a ++ operator, but += works.
 def match_ends(words):
-  # +++your code here+++
-  return
+  matches = [word for word in words if is_long_enough(word) and is_start_and_end_equal(word)]
+  return len(matches)
 
+def is_long_enough(word):
+  return len(word) >= 2
+def is_start_and_end_equal(word):
+  return word[:1] == word[-1:]
 
 # B. front_x
 # Given a list of strings, return a list with the strings
@@ -33,9 +37,9 @@ def match_ends(words):
 # Hint: this can be done by making 2 lists and sorting each of them
 # before combining them.
 def front_x(words):
-  # +++your code here+++
-  return
-
+  words_with_x = [word for word in words if word.startswith('x')]
+  other_words = [word for word in words if word not in words_with_x]
+  return sorted(words_with_x) + sorted(other_words)
 
 
 # C. sort_last
@@ -45,9 +49,10 @@ def front_x(words):
 # [(2, 2), (1, 3), (3, 4, 5), (1, 7)]
 # Hint: use a custom key= function to extract the last element form each tuple.
 def sort_last(tuples):
-  # +++your code here+++
-  return
+  return sorted(tuples, key=last_element)
 
+def last_element(tuple):
+  return tuple[-1:]
 
 # Simple provided test() function used in main() to print
 # what each function returns vs. what it's supposed to return.
@@ -56,18 +61,18 @@ def test(got, expected):
     prefix = ' OK '
   else:
     prefix = '  X '
-  print '%s got: %s expected: %s' % (prefix, repr(got), repr(expected))
+  print('%s got: %s expected: %s' % (prefix, repr(got), repr(expected)))
 
 
 # Calls the above functions with interesting inputs.
 def main():
-  print 'match_ends'
+  print('match_ends')
   test(match_ends(['aba', 'xyz', 'aa', 'x', 'bbb']), 3)
   test(match_ends(['', 'x', 'xy', 'xyx', 'xx']), 2)
   test(match_ends(['aaa', 'be', 'abc', 'hello']), 1)
 
   print
-  print 'front_x'
+  print('front_x')
   test(front_x(['bbb', 'ccc', 'axx', 'xzz', 'xaa']),
        ['xaa', 'xzz', 'axx', 'bbb', 'ccc'])
   test(front_x(['ccc', 'bbb', 'aaa', 'xcc', 'xaa']),
@@ -77,7 +82,7 @@ def main():
 
        
   print
-  print 'sort_last'
+  print('sort_last')
   test(sort_last([(1, 3), (3, 2), (2, 1)]),
        [(2, 1), (3, 2), (1, 3)])
   test(sort_last([(2, 3), (1, 2), (3, 1)]),
