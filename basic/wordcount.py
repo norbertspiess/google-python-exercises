@@ -39,19 +39,11 @@ print_words() and print_top().
 
 import sys
 
-# +++your code here+++
-# Define print_words(filename) and print_top(filename) functions.
-# You could write a helper utility function that reads a file
-# and builds and returns a word/count dict for it.
-# Then print_words() and print_top() can just call the utility function.
-
-###
-
 # This basic command line argument parsing code is provided and
 # calls the print_words() and print_top() functions which you must define.
 def main():
   if len(sys.argv) != 3:
-    print 'usage: ./wordcount.py {--count | --topcount} file'
+    print('usage: ./wordcount.py {--count | --topcount} file')
     sys.exit(1)
 
   option = sys.argv[1]
@@ -61,8 +53,38 @@ def main():
   elif option == '--topcount':
     print_top(filename)
   else:
-    print 'unknown option: ' + option
+    print('unknown option: ' + option)
     sys.exit(1)
 
+def print_words(filename):
+  dictionary = build_word_count_dictionary(filename)
+  for dict_entry in sorted(dictionary.items()):
+    print_entry(dict_entry)
+  
+def print_entry(entry):
+  print('{word} {count}'.format(word = entry[0], count = entry[1]))
+  
+def build_word_count_dictionary(filename):
+  file = open(filename, 'rU')
+  dictionary = {}
+  for line in file:
+    words = line.split()
+    for word in words:
+      word = word.lower()
+      dictionary[word] = dictionary.get(word, 0) + 1
+  file.close()
+  return dictionary
+
+def print_top(filename):
+  dictionary = build_word_count_dictionary(filename)
+  dictionary = sorted(dictionary.items(), reverse=True, key=word_count)
+  for dict_entry in dictionary[:20]:
+    print_entry(dict_entry)
+
+def word_count(dict_entry):
+  return dict_entry[-1:]
+  
 if __name__ == '__main__':
   main()
+
+
