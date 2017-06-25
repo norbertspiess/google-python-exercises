@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 # Copyright 2010 Google Inc.
 # Licensed under the Apache License, Version 2.0
@@ -40,10 +41,35 @@ def extract_names(filename):
   followed by the name-rank strings in alphabetical order.
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
-  # +++your code here+++
-  return
+  file_content = open(filename, 'r').read()
+  
+  year = extract_year(file_content)
+  name_directory = extract_names_with_rank(file_content)
+  return build_name_list_for_year(year, name_directory)
+  
+def extract_year(text):
+  match = re.search('Popularity in (\d{4})', text)
+  if match:
+    return match.groups(0)
+  else:
+    return 'unknown'
 
+def extract_names_with_rank(text):
+  matches = re.findall('<td>(\d+)</td><td>([a-zA-Z]+)</td><td>([a-zA-Z]+)</td>', text)
+  name_directory = {}
+  for match in matches:
+    (rank, boy, girl) = match
+    name_directory[boy] = rank
+    name_directory[girl] = rank
+  
+  return name_directory
 
+def build_name_list_for_year(year, name_rank_dict):
+  name_list_for_year = [year];
+  for name, rank in sorted(name_rank_dict.items()):
+    name_list_for_year.append('%s %s' % (name, rank))
+  return name_list_for_year
+  
 def main():
   # This command-line parsing code is provided.
   # Make a list of command line arguments, omitting the [0] element
@@ -51,7 +77,7 @@ def main():
   args = sys.argv[1:]
 
   if not args:
-    print 'usage: [--summaryfile] file [file ...]'
+    print('usage: [--summaryfile] file [file ...]')
     sys.exit(1)
 
   # Notice the summary flag and remove it from args if it is present.
@@ -60,9 +86,18 @@ def main():
     summary = True
     del args[0]
 
-  # +++your code here+++
-  # For each filename, get the names, then either print the text output
-  # or write it to a summary file
-  
+  for file in args:
+    names_of_year = extract_names(file)
+    
+    output = 'Year: %s\n' % names_of_year[0]
+    for name in names_of_year[1:]:
+      output = output + '\t%s\n' % name
+	  
+    if summary:
+      summary_file = open(file + '.summary', 'w')
+      summary_file.write(output)
+    else:
+      print(output)
+
 if __name__ == '__main__':
   main()
