@@ -16,12 +16,8 @@ import subprocess
 """
 def find_special_files(dir):
   filenames = os.listdir(dir)
-  special_files = []
-  for filename in filenames:
-    match = re.search('.*__\w+__.*', filename)
-    if (match):
-      absolute_file = os.path.abspath(os.path.join(dir, filename))
-      special_files.append(absolute_file)
+  special_files = [ filename for filename in filenames if re.search('.*__\w+__.*', filename) ]
+  special_files = [ os.path.abspath(os.path.join(dir, file)) for file in special_files]
   return special_files
   
 def copy_files_to(files, destination):
