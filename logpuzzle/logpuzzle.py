@@ -9,7 +9,7 @@
 import os
 import re
 import sys
-import urllib
+import urllib.request
 
 """Logpuzzle exercise
 Given an apache logfile, find the puzzle urls and download the images.
@@ -25,7 +25,16 @@ def read_urls(filename):
   Screens out duplicate urls and returns the urls sorted into
   increasing order."""
   # +++your code here+++
+  file = open(filename)
+  text = file.read()
+  file.close()
+ 
+  urls = re.findall('GET\s(\S+puzzle\S+)\s', text)
   
+  host = filename.split('_')[1]  
+  urls = [host + url for url in urls]
+  urls = sorted(set(urls))
+  return urls
 
 def download_images(img_urls, dest_dir):
   """Given the urls already in the correct order, downloads
@@ -37,12 +46,42 @@ def download_images(img_urls, dest_dir):
   """
   # +++your code here+++
   
+  if not os.path.exists(dest_dir):
+    os.mkdir(dest_dir)
+	
+  indexhtml = setup_indexhtml(dest_dir)
+  
+  urls = list(enumerate(img_urls))
+  for (index, img_url) in urls:
+    img_name = 'img{}'.format(index)
+    download_image_to(img_url, dest_dir, img_name)
+    add_img_ref_to_file(indexhtml, img_name)
+	
+  finish_and_close_indexhtml(indexhtml)
+	
+def setup_indexhtml(dest_dir):
+  indexhtml_path = os.path.join(os.path.abspath(dest_dir), 'index.html')
+  indexhtml = open(indexhtml_path, 'w')
+  indexhtml.write('<html><body>')
+  return indexhtml
+  
+def download_image_to(url, dir, filename):
+  path = os.path.join(os.path.abspath(dir), filename)
+  print('downloading to file ' + path + ' from http://' + url)
+  urllib.request.urlretrieve('http://' + url, path)
 
+def add_img_ref_to_file(file, ref):
+  file.write('<img src="{}">'.format(ref))
+	
+def finish_and_close_indexhtml(indexhtml):
+  indexhtml.write('</body></html>')
+  indexhtml.close()
+	
 def main():
   args = sys.argv[1:]
 
   if not args:
-    print 'usage: [--todir dir] logfile '
+    print('usage: [--todir dir] logfile ')
     sys.exit(1)
 
   todir = ''
@@ -55,7 +94,7 @@ def main():
   if todir:
     download_images(img_urls, todir)
   else:
-    print '\n'.join(img_urls)
+    print('\n'.join(img_urls))
 
 if __name__ == '__main__':
   main()
