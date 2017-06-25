@@ -96,6 +96,7 @@ def main():
     if summary:
       summary_file = open(file + '.summary', 'w')
       summary_file.write(output)
+	  summary_file.close()
     else:
       print(output)
 
