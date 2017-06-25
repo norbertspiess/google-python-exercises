@@ -25,10 +25,10 @@ def find_special_files(dir):
   return special_files
   
 def copy_files_to(files, destination):
+  if not os.path.exists(todir):
+    os.mkdir(todir)
   for file in files:
     print('copying %s to %s' % (file, todir))
-    if not os.path.exists(todir):
-      os.mkdir(todir)
     shutil.copy(file, todir)
 
 def zip_files_to(files, tozip):
